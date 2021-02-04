@@ -5,16 +5,22 @@ class ProductAPI {
     constructor() {
 
     }
+    //get all products details
     async  getAllProducts() {
         const url = "https://shoppingapp-mock.herokuapp.com/api/products";
         return axios.get(url);
     }
-
+    // to get all brand name
     async  getAllBrandName() {
         const url = "https://shoppingapp-mock.herokuapp.com/api/brands";
         return axios.get(url);
     }
-
+    // get all users
+    async getUsers() {
+        const url = "http://shoppingapp-mock.herokuapp.com/api/users";
+        return axios.get(url);
+    }
+    //sorting ascending order using price value
     sorting(value1, value2) {
         if (value1.price < value2.price) {
             return -1;
@@ -25,8 +31,31 @@ class ProductAPI {
         }
     }
 
+    // to check isValid user or not 
+    async isValidUser(loginDetails) {
+        let userDetails = await this.getUsers();
+        let users = userDetails.data;
 
+        let loginUser = users.find(p => p.email == loginDetails.email && p.password == loginDetails.password);
+        if (!loginUser) {
+            throw new Error("Invalid user details");
+        } else {
+            return loginUser
+        }
+    }
+    // to check success login or not
+    async login(loginDetails) {
+        try {
+            return await this.isValidUser(loginDetails);
 
+        } catch (err) {
+            console.log(err.message);
+
+            return err;
+        }
+    }
+
+    //search the product based on user input 
     async searchProducts(filters) {
         // let result = await getAllProducts().then(res => {
         //     return res.data;
