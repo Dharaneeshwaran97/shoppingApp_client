@@ -32,12 +32,25 @@ authAPI.login(email, password).then(response => {
 const productOrderAPI = new ProductOrderAPI;
 
 let orderDetails = { qty: 1, productId: 1, userId: 1 };
+// order the product
 productOrderAPI.orderProduct(orderDetails).then(response => {
-    console.log(response);
+    // console.log(response);
+    return "Order Placed";
 
 }).catch(err => {
     console.log(err.message);
+    throw err
 
+});
+
+// cancel order
+var cancelOrderId = 7;
+productOrderAPI.orderCancel(cancelOrderId).then(response => {
+    return "Order Cancelled Successfully";
+
+}).catch(err => {
+    console.log(err);
+    throw err;
 });
 
 // let returnValues = productAPI.getAllProducts();

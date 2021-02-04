@@ -60,6 +60,21 @@ class ProductOrderAPI {
             throw err;
         }
     }
+    // to find the particular orderid based order and change the status cancelled and add cancelled date
+    async cancelStatus(orderId) {
+        const url = "https://shoppingapp-mock.herokuapp.com/api/orders/" + orderId;
+        return axios.patch(url, { status: "CANCELLED", cancelledDate: new Date().toJSON() });
+    }
+
+    // to cancelled  the particular order 
+    async orderCancel(orderId) {
+        try {
+            var result = await this.cancelStatus(orderId);
+        } catch (err) {
+            throw new Error("Please choose valid orderId");
+        }
+
+    }
 }
 
 exports.ProductOrderAPI = ProductOrderAPI;
