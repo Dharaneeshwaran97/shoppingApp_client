@@ -12,25 +12,26 @@ class AuthAPI {
     }
 
     // to check isValid user or not 
-    async isValidUser(loginDetails) {
+    async isValidUser(email, password) {
         let userDetails = await this.getUsers();
         let users = userDetails.data;
 
-        let loginUser = users.find(p => p.email == loginDetails.email && p.password == loginDetails.password);
+        let loginUser = users.find(p => p.email == email && p.password == password);
         if (!loginUser) {
             throw new Error("Invalid user details");
         } else {
-            return loginUser
+            delete loginUser.password;
+            return loginUser;
         }
     }
     // to check success login or not
-    async login(loginDetails) {
+    async login(email, password) {
         try {
-            return await this.isValidUser(loginDetails);
+            return await this.isValidUser(email, password);
 
         } catch (err) {
             console.log(err.message);
-            return err;
+            throw err;
         }
     }
 
