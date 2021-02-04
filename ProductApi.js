@@ -10,6 +10,11 @@ class ProductAPI {
         return axios.get(url);
     }
 
+    async  getAllBrandName() {
+        const url = "https://shoppingapp-mock.herokuapp.com/api/brands";
+        return axios.get(url);
+    }
+
     sorting(value1, value2) {
         if (value1.price < value2.price) {
             return -1;
@@ -19,6 +24,9 @@ class ProductAPI {
             return 0;
         }
     }
+
+
+
     async searchProducts(filters) {
         // let result = await getAllProducts().then(res => {
         //     return res.data;

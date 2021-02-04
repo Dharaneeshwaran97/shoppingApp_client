@@ -7,6 +7,9 @@ productAPI.getAllProducts().then(response => {
     return response.data;
 
 });
+productAPI.getAllBrandName().then(response => {
+    return response.data;
+})
 
 productAPI.searchProducts(filters).then(response => {
     return response;
