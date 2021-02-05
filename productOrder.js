@@ -73,8 +73,36 @@ class ProductOrderAPI {
         } catch (err) {
             throw new Error("Please choose valid orderId");
         }
+    }
+    async getAllOrder() {
+        const url = "https://shoppingapp-mock.herokuapp.com/api/orders/";
+        return axios.get(url);
+    }
+
+
+    async validUser(userId) {
+        var ordersObject = await this.getAllOrder();
+        // console.log("orders", orders.data);
+        var orders = ordersObject.data;
+        var myOrders = orders.filter(o => o.userId == userId);
+        if (myOrders.length <= 0) {
+            throw new Error("Invalid User");
+        }
+        else {
+            return myOrders;
+        }
+    }
+    async myOrders(userId) {
+        try {
+            var userOrders = await this.validUser(userId);
+            return userOrders;
+        } catch (err) {
+            // console.log(err);
+            throw err;
+        }
 
     }
+
 }
 
 exports.ProductOrderAPI = ProductOrderAPI;

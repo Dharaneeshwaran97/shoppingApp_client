@@ -10,12 +10,20 @@ class ProductAPI {
         const url = "https://shoppingapp-mock.herokuapp.com/api/products";
         return axios.get(url);
     }
+    //to get all active products
+    async getActiveProducts() {
+        let productsResponse = await this.getAllProducts();
+        let products = productsResponse.data;
+
+        var activeProducts = products.filter(p => p.active == 1);
+        return activeProducts;
+    }
     // to get all brand name
     async  getAllBrandName() {
         const url = "https://shoppingapp-mock.herokuapp.com/api/brands";
         return axios.get(url);
     }
-   
+
     //sorting ascending order using price value
     sorting(value1, value2) {
         if (value1.price < value2.price) {
@@ -50,6 +58,22 @@ class ProductAPI {
         }
         else {
             return products;
+        }
+    }
+
+    // to change product active to inactive 
+    async changeProductMode(productId, status) {
+        let data = { active: status == true ? 1 : 0 };
+        const url = "https://shoppingapp-mock.herokuapp.com/api/products/" + productId;
+        return await axios.patch(url, data);
+    }
+
+    // to check given product id valid or not
+    async checkValidProduct(productId, status) {
+        try {
+            var result = await this.changeProductMode(productId, status);
+        } catch (err) {
+            throw new Error("Please choose correct product");
         }
     }
 };

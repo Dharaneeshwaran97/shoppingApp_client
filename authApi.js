@@ -12,11 +12,11 @@ class AuthAPI {
     }
 
     // to check isValid user or not 
-    async isValidUser(email, password) {
+    async isValidUser(email, password, role = "USER") {
         let userDetails = await this.getUsers();
         let users = userDetails.data;
 
-        let loginUser = users.find(p => p.email == email && p.password == password);
+        let loginUser = users.find(p => p.email == email && p.password == password && p.role == role );
         if (!loginUser) {
             throw new Error("Invalid user details");
         } else {
@@ -25,9 +25,9 @@ class AuthAPI {
         }
     }
     // to check success login or not
-    async login(email, password) {
+    async login(email, password, role) {
         try {
-            return await this.isValidUser(email, password);
+            return await this.isValidUser(email, password, role);
 
         } catch (err) {
             console.log(err.message);
