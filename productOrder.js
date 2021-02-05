@@ -1,18 +1,23 @@
 const axios = require('axios').default;
 
+const API_URL = "https://shoppingapp-mock.herokuapp.com/api/";
+
 class ProductOrderAPI {
     constructor() {
 
     }
+
+    //api url
+
     // to get if the correct products in products values other wise retrun error
     async  getProduct(productId) {
-        const url = "https://shoppingapp-mock.herokuapp.com/api/products/" + productId;
+        const url = API_URL + "products/" + productId;
         return axios.get(url);
     }
 
     // to get if the correct user in user values other wise retrun error
     async getUser(id) {
-        const url = "http://shoppingapp-mock.herokuapp.com/api/users/" + id;
+        const url = API_URL + "users/" + id;
         return axios.get(url);
     }
 
@@ -48,56 +53,87 @@ class ProductOrderAPI {
 
     //order the product
     async  orderProduct(orderDetails) {
+        console.log(orderDetails);
 
         try {
             await this.validCheck(orderDetails);
             orderDetails.status = "ORDERED";
             orderDetails.orderedDate = new Date().toJSON();
-            const url = "https://shoppingapp-mock.herokuapp.com/api/orders";
+            const url = API_URL + "orders";
             return axios.post(url, orderDetails);
         } catch (err) {
             console.log(err.message);
             throw err;
         }
     }
+    async validOrder(orderId) {
+        const url = API_URL + "orders/" + orderId;
+        return axios.get(url);
+
+    }
+
+    async validOrderStatusForCancellation(orderId) {
+        const url = API_URL + "orders/" + orderId;
+        var result = await axios.get(url);
+        var orderResult = result.data;
+        if (orderResult.status == "CANCELLED") {
+            throw new Error("Already Order Product has been Cancelled");
+        } else if (orderResult.status == "DELIVERED") {
+            throw new Error("Delivered Product cannot be cancelled");
+        }
+
+    }
+
     // to find the particular orderid based order and change the status cancelled and add cancelled date
     async cancelStatus(orderId) {
-        const url = "https://shoppingapp-mock.herokuapp.com/api/orders/" + orderId;
-        return axios.patch(url, { status: "CANCELLED", cancelledDate: new Date().toJSON() });
+        try {
+            const url = API_URL + "orders/" + orderId;
+            return axios.patch(url, { status: "CANCELLED", cancelledDate: new Date().toJSON() });
+
+
+        } catch (err) {
+            throw err;
+
+        }
+        // const url = "https://shoppingapp-mock.herokuapp.com/api/orders/" + orderId;
     }
 
     // to cancelled  the particular order 
     async orderCancel(orderId) {
         try {
+            await this.validOrderStatusForCancellation(orderId);
             var result = await this.cancelStatus(orderId);
         } catch (err) {
-            throw new Error("Please choose valid orderId");
+            throw err;
         }
     }
-    async getAllOrder() {
-        const url = "https://shoppingapp-mock.herokuapp.com/api/orders/";
+    async getAllOrders() {
+        const url = API_URL + "orders";
         return axios.get(url);
     }
 
 
     async validUser(userId) {
-        var ordersObject = await this.getAllOrder();
-        // console.log("orders", orders.data);
-        var orders = ordersObject.data;
-        var myOrders = orders.filter(o => o.userId == userId);
-        if (myOrders.length <= 0) {
-            throw new Error("Invalid User");
-        }
-        else {
-            return myOrders;
+        try {
+            var usersList = await this.getUser(userId);
+
+        } catch (err) {
+            throw new Error("Please check userID");
+
         }
     }
     async myOrders(userId) {
         try {
-            var userOrders = await this.validUser(userId);
-            return userOrders;
+            var userOrders = await this.validUser(userId); //if invalid user it will throw error
+            var ordersObject = await this.getAllOrders();
+            var orders = ordersObject.data;
+            var myOrders = orders.filter(o => o.userId == userId);
+            return myOrders;
+            // return userOrders;
+            // console.table(userOrders);
+
         } catch (err) {
-            // console.log(err);
+            // console.log(err.message);
             throw err;
         }
 

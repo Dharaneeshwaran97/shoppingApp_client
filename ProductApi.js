@@ -1,13 +1,15 @@
 // import { Product } from "./Product";
 // const {}
 const axios = require('axios').default;
+const API_URL = "https://shoppingapp-mock.herokuapp.com/api/";
+
 class ProductAPI {
     constructor() {
 
     }
     //get all products details
     async  getAllProducts() {
-        const url = "https://shoppingapp-mock.herokuapp.com/api/products";
+        const url = API_URL + "products";
         return axios.get(url);
     }
     //to get all active products
@@ -20,7 +22,7 @@ class ProductAPI {
     }
     // to get all brand name
     async  getAllBrandName() {
-        const url = "https://shoppingapp-mock.herokuapp.com/api/brands";
+        const url = API_URL + "brands";
         return axios.get(url);
     }
 
@@ -64,7 +66,7 @@ class ProductAPI {
     // to change product active to inactive 
     async changeProductMode(productId, status) {
         let data = { active: status == true ? 1 : 0 };
-        const url = "https://shoppingapp-mock.herokuapp.com/api/products/" + productId;
+        const url = API_URL + "products/" + productId;
         return await axios.patch(url, data);
     }
 

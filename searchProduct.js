@@ -11,7 +11,6 @@ var role = "ADMIN";
 //to get all product details
 productAPI.getAllProducts().then(response => {
     return response.data;
-
 });
 
 // get all active products only
@@ -40,19 +39,18 @@ productAPI.searchProducts(filters).then(response => {
 })
 
 // check valid user or not
-const authAPI = new AuthAPI;
+const authAPI = new AuthAPI();
 authAPI.login(email, password, role).then(response => {
     return response;
 
 });
 
-const productOrderAPI = new ProductOrderAPI;
+const productOrderAPI = new ProductOrderAPI();
 
 let orderDetails = { qty: 1, productId: 1, userId: 1 };
 // order the product
 productOrderAPI.orderProduct(orderDetails).then(response => {
-    // console.log(response);
-    return "Order Placed";
+    // console.log("Order Placed");
 
 }).catch(err => {
     console.log(err.message);
@@ -61,7 +59,7 @@ productOrderAPI.orderProduct(orderDetails).then(response => {
 });
 
 // cancel order
-var cancelOrderId = 4;
+var cancelOrderId = 6;
 productOrderAPI.orderCancel(cancelOrderId).then(response => {
     return "Order Cancelled Successfully";
 
@@ -71,12 +69,11 @@ productOrderAPI.orderCancel(cancelOrderId).then(response => {
 });
 
 // get userId based all order
-var userId = 2;
+var userId = 1;
 productOrderAPI.myOrders(userId).then(response => {
     return response;
 }).catch(err => {
-    // console.log(err);
-    return err;
+    throw err;
 
 });
 // let returnValues = productAPI.getAllProducts();
