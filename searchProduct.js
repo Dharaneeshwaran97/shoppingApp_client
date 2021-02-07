@@ -10,7 +10,11 @@ var password = "pass123";
 var role = "ADMIN";
 //to get all product details
 productAPI.getAllProducts().then(response => {
-    return response.data;
+    if (response.data) {
+        return response.data;
+    } else {
+        throw new Error("Not able to fetch product details");
+    }
 });
 
 // get all active products only
@@ -43,19 +47,21 @@ const authAPI = new AuthAPI();
 authAPI.login(email, password, role).then(response => {
     return response;
 
-});
-
-const productOrderAPI = new ProductOrderAPI();
-
-let orderDetails = { qty: 1, productId: 1, userId: 1 };
-// order the product
-productOrderAPI.orderProduct(orderDetails).then(response => {
-    // console.log("Order Placed");
-
 }).catch(err => {
     console.log(err.message);
     throw err
 
+});
+
+const productOrderAPI = new ProductOrderAPI();
+
+let orderDetails = { qty: 3, productId: 3, userId: 3 };
+// order the product
+productOrderAPI.orderProduct(orderDetails).then(response => {
+    console.log("Order Placed");
+}).catch(err => {
+    console.log(err.message);
+    throw err;
 });
 
 // cancel order
@@ -76,6 +82,62 @@ productOrderAPI.myOrders(userId).then(response => {
     throw err;
 
 });
-// let returnValues = productAPI.getAllProducts();
 
-// let returnValues = await productAPI.getAllProducts();
+// to register new user
+const { UserAPI } = require("./userApi");
+const userAPI = new UserAPI();
+var userDetails = { name: "Dharani", email: "dharani@gmail.com", password: "dharani@90" };
+userAPI.newUserRegister(userDetails).then(response => {
+    console.log(response);
+}).catch(err => {
+    throw err;
+});
+
+//to get user id based user details
+var userId = 10;
+userAPI.getUserDetail(userId).then(response => {
+    return response
+}).catch(err => {
+    throw err;
+})
+
+// to get all users
+userAPI.getUsers().then(response => {
+    if (response) {
+        return response.data;
+    } else {
+        throw new Error("Not able to fetch the data");
+    }
+});
+
+//to add a new product
+var productDetails = { name: "redmi note", brandName: "RedMi", ram: 3, price: 15000 };
+productAPI.addNewProduct(productDetails).then(response => {
+    console.log("Response");
+}).catch(err => {
+    console.log(err);
+    throw err;
+});
+
+// to get a product id based get details
+var productId = 10;
+productOrderAPI.getProduct(productId).then(response => {
+    console.log(response.data);
+
+}).catch(err => {
+    throw new Error("Please enter valid productId");
+})
+
+// to get all orders list
+productOrderAPI.getAllOrders().then(response => {
+    return response.data;
+}).catch(err => {
+    throw new Error("Not able to fetch the orders");
+});
+
+// to change status to ordered to delivered based on orderId
+productOrderAPI.changeStatus(orderId).then(response => {
+    console.log(response);
+}).catch(err => {
+    throw err;
+})

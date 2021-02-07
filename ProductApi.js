@@ -78,6 +78,51 @@ class ProductAPI {
             throw new Error("Please choose correct product");
         }
     }
+
+    async toCheckExistingProduct(brandName) {
+        var userList = await this.getAllProducts();
+        var users = userList.data;
+        var result = users.some(u => u.brandName == brandName);
+        // console.table(result);
+        return result;
+    }
+
+    // to check valid product details
+    async isValid(productDetails) {
+        console.log("productDetails", productDetails);
+
+        if (productDetails.name != null && !productDetails.name.trim().length <= 0 && productDetails.brandName != null && !productDetails.brandName.trim().length <= 0 && ! await this.toCheckExistingProduct(productDetails.brandName)) {
+            console.log("If");
+
+            // if (userDetails.name != null && !userDetails.name.trim().length <= 0 && ! await this.toCheckExistingProduct(userDetails.email) && userDetails.password.length >= 8) {
+            const url = API_URL + "products";
+            console.log(productDetails.ratings);
+
+            productDetails.ratings = 0;
+            productDetails.active = 1;
+            productDetails.createdDate = new Date().toJSON();
+            console.log(productDetails);
+
+            return axios.post(url, productDetails);
+
+        } else {
+            // console.log("Else");
+
+            throw new Error("Please Enter Valid details");
+        }
+
+    }
+
+    // to add a new product
+    async addNewProduct(productDetails) {
+        try {
+            await this.isValid(productDetails);
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
+
 };
 
 exports.ProductAPI = ProductAPI;

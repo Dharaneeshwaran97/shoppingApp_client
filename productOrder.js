@@ -15,6 +15,12 @@ class ProductOrderAPI {
         return axios.get(url);
     }
 
+    // to get all orders
+    async getAllOrders() {
+        const url = API_URL + "orders";
+        return axios.get(url);
+    }
+
     // to get if the correct user in user values other wise retrun error
     async getUser(id) {
         const url = API_URL + "users/" + id;
@@ -57,8 +63,13 @@ class ProductOrderAPI {
 
         try {
             await this.validCheck(orderDetails);
+            var result = await this.getProduct(orderDetails.productId);
+            var productPrice = result.data.price;
+
             orderDetails.status = "ORDERED";
+            orderDetails.price = orderDetails.qty * productPrice
             orderDetails.orderedDate = new Date().toJSON();
+
             const url = API_URL + "orders";
             return axios.post(url, orderDetails);
         } catch (err) {
@@ -66,12 +77,13 @@ class ProductOrderAPI {
             throw err;
         }
     }
+    //to check is valid order or not 
     async validOrder(orderId) {
         const url = API_URL + "orders/" + orderId;
         return axios.get(url);
 
     }
-
+    //to check valid status for order
     async validOrderStatusForCancellation(orderId) {
         const url = API_URL + "orders/" + orderId;
         var result = await axios.get(url);
@@ -90,13 +102,13 @@ class ProductOrderAPI {
             const url = API_URL + "orders/" + orderId;
             return axios.patch(url, { status: "CANCELLED", cancelledDate: new Date().toJSON() });
 
-
         } catch (err) {
             throw err;
 
         }
-        // const url = "https://shoppingapp-mock.herokuapp.com/api/orders/" + orderId;
     }
+
+
 
     // to cancelled  the particular order 
     async orderCancel(orderId) {
@@ -107,22 +119,63 @@ class ProductOrderAPI {
             throw err;
         }
     }
+
+
+    // to check order status ordered to delivered
+    async changeDeliveryStatus(orderId) {
+
+        console.log(orderId);
+
+        const url = API_URL + "orders/" + orderId;
+        var result = await axios.get(url);
+        var orderResult = result.data;
+        if (orderResult.status == "CANCELLED") {
+            throw new Error("Already Order Product has been Cancelled");
+        } else if (orderResult.status == "DELIVERED") {
+            throw new Error("Delivered Product cannot be Delivery");
+        }
+
+    }
+
+    // to change delivered status
+    async deliveredStatus(orderId) {
+        try {
+            const url = API_URL + "orders/" + orderId;
+            return axios.patch(url, { status: "DELIVERED", deliveredDate: new Date().toJSON() });
+
+        } catch (err) {
+            throw err;
+
+        }
+    }
+    // to cancelled  the particular order 
+    async changeStatus(orderId) {
+        try {
+            await this.changeDeliveryStatus(orderId);
+            var result = await this.deliveredStatus(orderId);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    // to get all orders
     async getAllOrders() {
         const url = API_URL + "orders";
         return axios.get(url);
     }
 
-
+    // to check valid user or not based on userID
     async validUser(userId) {
         try {
             var usersList = await this.getUser(userId);
-
         } catch (err) {
             throw new Error("Please check userID");
 
         }
     }
-    async myOrders(userId) {
+
+    // to get orders to particular user id based
+        async myOrders(userId) {
         try {
             var userOrders = await this.validUser(userId); //if invalid user it will throw error
             var ordersObject = await this.getAllOrders();
@@ -136,8 +189,9 @@ class ProductOrderAPI {
             // console.log(err.message);
             throw err;
         }
-
     }
+
+
 
 }
 
